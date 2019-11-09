@@ -6,7 +6,7 @@ import Vue from 'vue'
 import { Loading, Message } from 'element-ui' // 引用element-ui的加载和消息提示组件
 const service = axios.create({
     // 设置超时时间
-    timeout: 5000,
+    timeout: 120000,
     // 基础url，会在请求url中自动添加前置链接
     baseURL:'http://203.195.140.253:8080'
   })

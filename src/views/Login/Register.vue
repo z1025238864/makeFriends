@@ -79,6 +79,7 @@ return {
     userPwd:'',
     newpassword:'',
     sex:1,
+    birthday:''
 }
 }
 ,

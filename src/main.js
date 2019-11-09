@@ -32,7 +32,9 @@ import {
   DropdownItem,
   Dialog,
   RadioButton,
-  Pagination
+  Pagination,
+  Option,
+  Upload
  } from 'element-ui'; 
 Vue.config.productionTip = false;
 Vue.use(Button)
@@ -61,6 +63,8 @@ Vue.use(Button)
   .use(Radio)
   .use(RadioButton)
   .use(Pagination)
+  .use(Option)
+  .use(Upload)
 new Vue({
   router,
   store,

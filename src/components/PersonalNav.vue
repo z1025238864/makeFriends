@@ -18,7 +18,7 @@
         <i class="el-icon-user-solid" style="color:white"></i>
         <span slot="title">主頁</span>
       </el-menu-item>
-      <el-menu-item index="1">
+      <el-menu-item index="/chat">
         <i class="el-icon-s-comment" style="color:white"></i>
         <span slot="title">聊天</span>
       </el-menu-item>
@@ -38,10 +38,10 @@
       </el-menu-item>
       <el-submenu index="2">
         <template slot="title">設置</template>
-        <el-menu-item index="2-1">聯繫我們</el-menu-item>
-        <el-menu-item index="2-1">頭像設定</el-menu-item>
-        <el-menu-item index="2-2">資料設定</el-menu-item>
-        <el-menu-item index="2-3">修改密碼</el-menu-item>
+        <el-menu-item>聯繫我們</el-menu-item>
+        <el-menu-item @click="jumpPic">頭像設定</el-menu-item>
+        <el-menu-item @click="jumpMsg">資料設定</el-menu-item>
+        <el-menu-item @click="jumpPwd">修改密碼</el-menu-item>
       </el-submenu>
     </el-menu>
     <el-dialog :visible.sync="dialogFormVisible">
@@ -69,26 +69,7 @@
           </el-radio-group>
           <el-input v-model="customMon" placeholder="請輸入金額"></el-input>
         </div>
-        <div slot="footer" class="dialog-footer">
-          <form action="https://www.sandbox.paypal.com/cgi-bin/webscr" method="post" target="_top">
-            <input type="hidden" name="cmd" value="_s-xclick" />
-            <input type="hidden" name="hosted_button_id" value="NM28GUWFM76KJ" />
-            <input
-              type="image"
-              src="https://www.sandbox.paypal.com/en_US/i/btn/btn_buynowCC_LG.gif"
-              border="0"
-              name="submit"
-              alt="PayPal - The safer, easier way to pay online!"
-            />
-            <img
-              alt
-              border="0"
-              src="https://www.sandbox.paypal.com/zh_XC/i/scr/pixel.gif"
-              width="1"
-              height="1"
-            />
-          </form>
-        </div>
+       
       </div>
       <div class="gradeF" ref="gradeF">
         <div class="title">
@@ -173,83 +154,35 @@
             </div>
           </div>
         </div>
-        <div class="footer">
-          <div class="payBtn">
-            <el-radio v-model="jinbi" label="1">
+        
+      </div>
+       <div slot="footer" class="dialog-footer">
+           <el-radio 
+            v-model="jinbi" 
+            label="1">
               <i class="iconfont icon-jinbi" style="color:orange;cursor:pointer"></i>
             </el-radio>
-            <el-radio v-model="jinbi" label="2">
-              <form
-                action="https://www.sandbox.paypal.com/cgi-bin/webscr"
-                method="post"
-                target="_top"
-              >
-                <input type="hidden" name="cmd" value="_s-xclick" />
-                <input type="hidden" name="hosted_button_id" value="NM28GUWFM76KJ" />
-                <input
-                  type="image"
-                  src="https://www.sandbox.paypal.com/en_US/i/btn/btn_buynowCC_LG.gif"
-                  border="0"
-                  name="submit"
-                  alt="PayPal - The safer, easier way to pay online!"
-                />
-                <img
-                  alt
-                  border="0"
-                  src="https://www.sandbox.paypal.com/zh_XC/i/scr/pixel.gif"
-                  width="1"
-                  height="1"
-                />
-              </form>
-            </el-radio>
-          </div>
-          <el-button 
-            type="success" 
-            style="font-weight:bold">立即升級</el-button>
+          <div id="paypal-button-container"></div>
         </div>
-        <div id="paypal-button-container"></div>
-      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-// <script
-//         src="https://www.paypal.com/sdk/js?client-id=AVRBAey09wozHSMiPC3Uzj7ggez3SfDWhp3Na9YCc99NKHZ2PjCrUo00LWiBwL1m1MGlNgcqaP6IYiO-"> // Required. Replace SB_CLIENT_ID with your sandbox client ID.
-// </script>
-  // paypal.Buttons().render('#paypal-button-container');
-    // This function displays Smart Payment Buttons on your web page.
-    // paypal.Buttons({
-    //     createOrder: function(data, actions) {
-    //         // This function sets up the details of the transaction, including the amount and line item details.
-    //         return actions.order.create({
-    //             purchase_units: [{
-    //                 amount: {
-    //                     value: '0.01'
-    //                 }
-    //             }]
-    //         });
-    //     },
-    //         onApprove: function(data, actions) {
-    //             // This function captures the funds from the transaction.
-    //             return actions.order.capture().then(function(details) {
-    //                 // This function shows a transaction success message to your buyer.
-    //                 console.log(data,details)
-    //                 //这里是成功了的回调，在此处调用我们自己后台接口，暂定为getOrderStatus
-    //                 //url="https://developer.paypal.com/docs/checkout/integration-features/customize-button/"
-    //                 alert('Transaction completed by ' + details.payer.name.given_name);
-    //             });
-    //         }
-    // }
-    // ).render('#paypal-button-container');
-
-
-
-
+import { payMoney } from "../api/payMoney";
 export default {
   name: "headNav",
+  created() {
+    const s = document.createElement("script");
+    s.type = "text/javascript";
+    s.src =
+      "https://www.paypal.com/sdk/js?client-id=AVRBAey09wozHSMiPC3Uzj7ggez3SfDWhp3Na9YCc99NKHZ2PjCrUo00LWiBwL1m1MGlNgcqaP6IYiO-";
+    document.body.appendChild(s);
+  },
+  mounted() {},
   data() {
     return {
+      userId: this.$store.state.userId,
       search: "",
       dialogFormVisible: false,
       form: {
@@ -326,21 +259,81 @@ export default {
   },
   methods: {
     pay() {},
+    chat() {
+      alert(1);
+    },
+    jumpPic() {
+      this.$router.push({
+        path: "/updateMsg/avatar"
+      });
+    },
+    jumpMsg() {
+      this.$router.push({
+        path: "/updateMsg/info"
+      });
+    },
+    jumpPwd() {
+      this.$router.push({
+        path: "/updateMsg/pwd"
+      });
+    },
     payMoney(ref) {
       this.dialogFormVisible = true;
-      console.log(ref);
+      const userId = this.userId;
+      setTimeout(function() {
+        paypal
+          .Buttons({
+            createOrder: function(data, actions) {
+              console.log("create");
+              // This function sets up the details of the transaction, including the amount and line item details.
+              return actions.order.create({
+                purchase_units: [
+                  {
+                    amount: {
+                      value: "0.01"
+                    }
+                  }
+                ]
+              });
+            },
+            onApprove: function(data, actions) {
+              // This function captures the funds from the transaction.
+              return actions.order.capture().then(function(details) {
+                // This function shows a transaction success message to your buyer.
+                console.log(data);
+                console.log(details);
+                //这里是成功了的回调，在此处调用我们自己后台接口，暂定为getOrderStatus
+                const orderId = data.orderID;
+                payMoney({ orderId, userId }).then(res =>{
+                  if( res.code===200 ){
+                    alert('交易成功')
+                  }else{
+                    alert("请联系管理员")
+                  }
+                });
+                alert(
+                  "Transaction completed by " + details.payer.name.given_name
+                );
+              });
+            }
+          })
+          .render("#paypal-button-container");
+      }, 300);
+      setTimeout(() => {
+        if (ref === "pay") {
+          this.$refs["pay"] && this.$refs["pay"].classList.add("active");
+          this.$refs["grade"] && this.$refs["grade"].classList.remove("active");
+          this.$refs["gradeF"] && (this.$refs["gradeF"].style.display = "none");
+          this.$refs["balance"] &&
+            (this.$refs["balance"].style.display = "block");
+        }
+      }, 1500);
+
       if (ref === "grade") {
         this.$refs["grade"] && this.$refs["grade"].classList.add("active");
         this.$refs["pay"] && this.$refs["pay"].classList.remove("active");
         this.$refs["balance"] && (this.$refs["balance"].style.display = "none");
         this.$refs["gradeF"] && (this.$refs["gradeF"].style.display = "block");
-      }
-      if (ref === "pay") {
-        this.$refs["grade"] && this.$refs["grade"].classList.remove("active");
-        this.$refs["pay"] && this.$refs["pay"].classList.add("active");
-        this.$refs["balance"] &&
-          (this.$refs["balance"].style.display = "block");
-        this.$refs["gradeF"] && (this.$refs["gradeF"].style.display = "none");
       }
     },
     handleSelect(key, keyPath) {

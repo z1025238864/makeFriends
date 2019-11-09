@@ -7,7 +7,8 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
-    redirect: "/updateMsg",
+    // redirect: "/updateMsg",
+    redirect: "/login",
   },
   {
     path: "/login",
@@ -26,6 +27,11 @@ const routes = [
         path: 'newdynamic',
         name: 'newdynamic',
         component: () => import('../views/PersonalHome/NewDynamic.vue')
+      },
+      {
+        path: 'meet',
+        name: 'meet',
+        component: () => import('../views/PersonalHome/Meet/Meet.vue')
       },
       {
         path: 'visiter',
@@ -66,7 +72,11 @@ const routes = [
       },
     ]
   },
- 
+  {
+    path:'/chat',
+    name:'chat',
+    component:()=>import('../views/Chat/Chat.vue')
+  }
 
 
 

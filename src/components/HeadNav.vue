@@ -48,8 +48,14 @@ name: 'headnav',
       } ).then( res=>{
         if( res.code > 0 ){
           const token = res.data.token
+          const id = res.data.id
           this.$store.commit('setToken',token);
-          this.$router.push('/')
+          this.$router.push({
+            path:'/personalHome/newdynamic',
+            query:{
+              id
+            }
+          })
         }
       } ).catch(err=>console.log(err))
     }
