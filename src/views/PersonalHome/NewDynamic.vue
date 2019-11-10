@@ -90,6 +90,9 @@ export default {
       time: formatTime(new Date())
     };
   },
+  created(){
+    
+  },
   methods: {
     jumpHome() {}
   },
