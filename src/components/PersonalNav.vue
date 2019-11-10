@@ -58,7 +58,7 @@
           <p class="title">選擇充值金額：</p>
         </div>
         <div class="option">
-          <el-radio-group v-model="radio1" text-color="#F7C709" fill="#F7C709">
+          <el-radio-group v-model="radio1" text-color="#F7C709" fill="#F7C709" @change="checkMoney">
             <el-radio
               v-for="(item, index ) in moneyList"
               :key="index"
@@ -67,7 +67,7 @@
               style="width:200px;height:70px;line-height:50px;margin:10px 10px;"
             ></el-radio>
           </el-radio-group>
-          <el-input v-model="customMon" placeholder="請輸入金額"></el-input>
+          <el-input  v-model="customMon" placeholder="請輸入金額" :disabled="checkMoneyed"></el-input>
         </div>
        
       </div>
@@ -106,7 +106,7 @@
             <div class="chooseList">
               <el-radio-group v-model="radio">
                 <div class="listItem" v-for="( item,index ) in goodsList" :key="index">
-                  <el-radio :label="item.val" border>
+                  <el-radio :label="item.val" border >
                     <span>{{item.oldVal}}</span>
                     <span>{{item.newVal}}</span>
                     <span>{{item.save}}</span>
@@ -142,9 +142,9 @@
               </p>
             </div>
             <div class="chooseList">
-              <el-radio-group v-model="radio">
+              <el-radio-group v-model="radio" >
                 <div class="listItem" v-for="( item,index ) in wingList" :key="index">
-                  <el-radio :label="item.val" border>
+                  <el-radio :label="item.val" border @change="checkMoney">
                     <span>{{item.oldVal}}</span>
                     <span>{{item.newVal}}</span>
                     <span>{{item.save}}</span>
@@ -182,6 +182,7 @@ export default {
   mounted() {},
   data() {
     return {
+      checkMoneyed:true,
       userId: this.$store.state.userId,
       search: "",
       dialogFormVisible: false,
@@ -198,7 +199,7 @@ export default {
       formLabelWidth: "220px",
       customMon: "",
       radio1: "100",
-      moneyList: ["100", "200", "500", "50", "20"],
+      moneyList: ["100", "200", "500", "50", "20","自定义"],
       who: 1,
       friendId: "",
       radio: 1,
@@ -258,6 +259,13 @@ export default {
     };
   },
   methods: {
+    checkMoney(){
+      if (this.radio1=="自定义"){
+        this.checkMoneyed=false
+      }else {
+        this.checkMoneyed=true
+      }
+    },
     pay() {},
     chat() {
       alert(1);
@@ -278,6 +286,7 @@ export default {
       });
     },
     payMoney(ref) {
+      let that=this
       this.dialogFormVisible = true;
       const userId = this.userId;
       setTimeout(function() {
@@ -290,7 +299,7 @@ export default {
                 purchase_units: [
                   {
                     amount: {
-                      value: "0.01"
+                      value: that.radio1!="自定义"?that.radio1:that.customMon
                     }
                   }
                 ]
@@ -305,7 +314,8 @@ export default {
                 //这里是成功了的回调，在此处调用我们自己后台接口，暂定为getOrderStatus
                 const orderId = data.orderID;
                 payMoney({ orderId, userId }).then(res =>{
-                  if( res.code===200 ){
+                  console.log(res)
+                  if( res.code==200 ){
                     alert('交易成功')
                   }else{
                     alert("请联系管理员")
