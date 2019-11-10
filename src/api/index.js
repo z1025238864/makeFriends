@@ -8,7 +8,7 @@ const service = axios.create({
     // 设置超时时间
     timeout: 120000,
     // 基础url，会在请求url中自动添加前置链接
-    baseURL:'http://203.195.140.253:8080'
+    baseURL:'http://203.195.140.253'
   })
   Vue.prototype.Axios = axios // 这里并发请求以便在组件使用this.Axios.all()，
   
