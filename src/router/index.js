@@ -43,6 +43,11 @@ const routes = [
         name: 'friend',
         component: () => import('../views/PersonalHome/Friend/Friend.vue')
       },
+      {
+        path: 'gift',
+        name: 'gift',
+        component: () => import('../views/PersonalHome/Gift/Gift.vue')
+      },
     ]
   },
   {
