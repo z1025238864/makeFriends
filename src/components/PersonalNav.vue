@@ -300,7 +300,6 @@ export default {
               // This function captures the funds from the transaction.
               return actions.order.capture().then(function(details) {
                 // This function shows a transaction success message to your buyer.
-                console.log(data);
                 console.log(details);
                 //这里是成功了的回调，在此处调用我们自己后台接口，暂定为getOrderStatus
                 const orderId = data.orderID;
