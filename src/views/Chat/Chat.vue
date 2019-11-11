@@ -80,6 +80,7 @@ export default {
           for (var i=0;i<res.data.length;i++){
             that.messageList.push(res.data[i])
             res.data[i].isRead=1;
+            that.$store.commit('ReadusermessageList',res.data[i].senderId);
             readMessgae(res.data[i]).then(res =>{
               console.log("readmessage"+res)
             })
