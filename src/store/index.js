@@ -8,6 +8,7 @@ export default new Vuex.Store({
     token:localStorage.getItem('token') || '',
     userId:localStorage.getItem('userId') || '',
     messagenumber:0,
+    usermessage:"",
   },
   mutations: {
     setToken( state, value ){
@@ -20,8 +21,17 @@ export default new Vuex.Store({
     },
     test( state, value ){
       state.messagenumber=state.messagenumber+1
-      alert(2222)
     },
+    usermessageList(state,value){
+      state.usermessage=value
+      localStorage.setItem(state.userId,JSON.stringify(value));
+    },
+    ReadusermessageList(state,value){
+      var a=JSON.parse(localStorage.getItem(state.userId));
+        a[value]=0;
+      state.usermessage=value
+      localStorage.setItem(state.userId,JSON.stringify(a));
+    }
   },
   actions: {},
   modules: {},

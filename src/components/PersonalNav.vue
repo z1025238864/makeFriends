@@ -365,6 +365,9 @@ export default {
   },
   mounted(){
     let that=this;
+
+    console.log(that.$store.state.usermessage)
+    that.$store.state.usermessage=JSON.parse(localStorage.getItem(that.$store.state.userId))
     let Params={
       recieveId:that.$store.state.userId
     }
@@ -380,13 +383,15 @@ export default {
             var key=res.data[i].sender_id
             var value=res.data[i].unRead
             a[key]=value;
-            localStorage.setItem(that.$store.state.userId,JSON.stringify(a));
+            that.$store.commit('usermessageList',a);
+            // localStorage.setItem(that.$store.state.userId,JSON.stringify(a));
           } else {
             var a={}
             var key=res.data[i].sender_id
             var value=res.data[i].unRead
             a[key]=value;
-            localStorage.setItem(that.$store.state.userId,JSON.stringify(a));
+            that.$store.commit('usermessageList',a);
+            // localStorage.setItem(that.$store.state.userId,JSON.stringify(a));
           }
         }
       }
@@ -403,26 +408,29 @@ export default {
       window.WebSocket = window.MozWebSocket;
     }
     if(window.WebSocket){
-      socket = new WebSocket("ws:http://203.195.140.253:8400/ws?userId="+that.$store.state.userId);
+      socket = new WebSocket("ws://127.0.0.1:8400/ws?userId="+that.$store.state.userId);
       socket.onmessage = function(event){
+        console.log(event.data)
+        var data=JSON.parse(event.data)
         var usermessage=localStorage.getItem(that.$store.state.userId);
         if (usermessage!=null){
           var a=JSON.parse(usermessage);
-          var key=res.data[i].sender_id
-          var value=res.data[i].unRead
-          a[key]=value;
-          localStorage.setItem(that.$store.state.userId,JSON.stringify(a));
+          var key=data.senderId
+          a[key]=a[key]+1;
+          that.$store.commit('usermessageList',a);
+          // localStorage.setItem(that.$store.state.userId,JSON.stringify(a));
         } else {
           var a={}
-          var key=res.data[i].sender_id
-          var value=res.data[i].unRead
-          a[key]=value;
-          localStorage.setItem(that.$store.state.userId,JSON.stringify(a));
+          var key=data.sender_id
+          a[key]=a[key]+1;
+          that.$store.commit('usermessageList',a);
+          // localStorage.setItem(that.$store.state.userId,JSON.stringify(a));
         }
         // var ta = document.getElementById('responseText');
         // eslint-disable-next-line no-console
         that.$store.state.messagenumber=that.$store.state.messagenumber+1
         console.log(event,event.data)
+        console.log(that.$store.state.usermessage)
         // ta.value += event.data+"\r\n";
       };
       socket.onopen = function(event){
