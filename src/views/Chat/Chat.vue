@@ -62,7 +62,6 @@ export default {
       this.isRun=true;
       var a=this.$store.state.messagenumber;
       if (a>0){
-        alert("have message")
       }
       let params={
         //这里获取当前登录用户id，我这里没写好,出现undefined你检查下
