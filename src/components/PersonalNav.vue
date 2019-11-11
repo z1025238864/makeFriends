@@ -369,8 +369,30 @@ export default {
       recieveId:that.$store.state.userId
     }
     getUnReadMessage(Params).then(res =>{
+      console.log(res)
+      for (var i=0;i<res.data.length;i++){
+        if (res.data[i].sender_id=="all"){
+          that.$store.state.messagenumber=res.data[i].unRead;
+        } else {
+          var usermessage=localStorage.getItem(that.$store.state.userId);
+          if (usermessage!=null){
+            var a=JSON.parse(usermessage);
+            var key=res.data[i].sender_id
+            var value=res.data[i].unRead
+            a[key]=value;
+            localStorage.setItem(that.$store.state.userId,JSON.stringify(a));
+          } else {
+            var a={}
+            var key=res.data[i].sender_id
+            var value=res.data[i].unRead
+            a[key]=value;
+            localStorage.setItem(that.$store.state.userId,JSON.stringify(a));
+          }
+        }
+      }
       console.log(that.$store.state.userId)
       console.log(localStorage.getItem(that.$store.state.userId))
+      console.log(that.$store.state.messagenumber)
       console.log(that.$store.message)
       console.log(res)
     }).catch(erro =>{
@@ -381,10 +403,25 @@ export default {
       window.WebSocket = window.MozWebSocket;
     }
     if(window.WebSocket){
-      socket = new WebSocket("ws://127.0.0.1:8400/ws?userId=777");
+      socket = new WebSocket("ws://127.0.0.1:8400/ws?userId="+that.$store.state.userId);
       socket.onmessage = function(event){
+        var usermessage=localStorage.getItem(that.$store.state.userId);
+        if (usermessage!=null){
+          var a=JSON.parse(usermessage);
+          var key=res.data[i].sender_id
+          var value=res.data[i].unRead
+          a[key]=value;
+          localStorage.setItem(that.$store.state.userId,JSON.stringify(a));
+        } else {
+          var a={}
+          var key=res.data[i].sender_id
+          var value=res.data[i].unRead
+          a[key]=value;
+          localStorage.setItem(that.$store.state.userId,JSON.stringify(a));
+        }
         // var ta = document.getElementById('responseText');
         // eslint-disable-next-line no-console
+        that.$store.state.messagenumber=that.$store.state.messagenumber+1
         console.log(event,event.data)
         // ta.value += event.data+"\r\n";
       };

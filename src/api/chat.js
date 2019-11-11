@@ -8,3 +8,8 @@ export function getUnReadMessage(params) {
     const url ="/messageLog/getUnReadMessage"
     return service.get( url,params )
 }
+
+export function readMessgae(params) {
+    const url ="/messageLog/update"
+    return service.put(url,params)
+}

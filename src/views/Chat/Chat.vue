@@ -4,26 +4,29 @@
         <PersonalNav />
     </el-header>
     <div class="main">
+      <div class="page2">
+        <button @click="togglepage2">点击切换</button>
+      </div>
       <div class="content">
         <p class="title">和小A聊天</p>
         <div class="area" id="area">
           <div v-for="(item,i) in messageList" :class="item.receiverId==$store.state.userId?'left':'right'" v-html="item.message">
 
           </div>
-          <div class="left">
-            <div class="pic">
-              <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1573405301974&di=19a5ac0036be05429848349d6724dbfd&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201611%2F19%2F20161119174623_H2Rhm.jpeg" alt="">
-            </div>
-             <p class="text">
-              吃過了
-            </p>
-          </div>
-          <div class="right">
-            <p class="text">吃過晚飯了嗎</p>
-            <div class="pic">
-              <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1573404311388&di=62703ccdae399f3665cfd6c3854b8c0f&imgtype=0&src=http%3A%2F%2Fhbimg.b0.upaiyun.com%2F537ba184ea074e1eddc38df829e0a96dca3bded496a4-WRLW2A_fw658" alt="">
-            </div>
-          </div>
+<!--          <div class="left">-->
+<!--            <div class="pic">-->
+<!--              <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1573405301974&di=19a5ac0036be05429848349d6724dbfd&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201611%2F19%2F20161119174623_H2Rhm.jpeg" alt="">-->
+<!--            </div>-->
+<!--             <p class="text">-->
+<!--              吃過了-->
+<!--            </p>-->
+<!--          </div>-->
+<!--          <div class="right">-->
+<!--            <p class="text">吃過晚飯了嗎</p>-->
+<!--            <div class="pic">-->
+<!--              <img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1573404311388&di=62703ccdae399f3665cfd6c3854b8c0f&imgtype=0&src=http%3A%2F%2Fhbimg.b0.upaiyun.com%2F537ba184ea074e1eddc38df829e0a96dca3bded496a4-WRLW2A_fw658" alt="">-->
+<!--            </div>-->
+<!--          </div>-->
         </div>
         <div class="send">
             <Editor/>
@@ -34,11 +37,13 @@
 </template>
 <script>
 import {getmessage} from '../../api/chat';
+import {readMessgae} from '../../api/chat';
 import Editor from "./Editor";
 export default {
   name: "chat",
   data() {
     return {
+      isRun:false,
       messageList:[],
       // messagenumber:this.$store.messagenumber
     };
@@ -47,15 +52,22 @@ export default {
     Editor
   },
   methods:{
+    togglepage2:function(){
+      this.$store.commit('test',1);
+    },
     getmessage(curVal,oldVal){
-      // var a=this.$store.message.get(this.chatTo)
-      // if (a>0){
-      //   alert("have message")
-      // }
+      while (this.isRun){
+        sleep(100)
+      }
+      this.isRun=true;
+      var a=this.$store.state.messagenumber;
+      if (a>0){
+        alert("have message")
+      }
       let params={
         //这里获取当前登录用户id，我这里没写好,出现undefined你检查下
         // recieveId:this.$store.state.userId!=null?this.$store.state.userId!=undefined?this.$store.state.userId:0:5,
-        recieveId:5,
+        recieveId:this.$store.state.userId,
         // senderId:this.chatTo!=null?this.chatTo:''
         senderId:6
       }
@@ -68,6 +80,10 @@ export default {
           console.log(this.$store.state.userId)
           for (var i=0;i<res.data.length;i++){
             that.messageList.push(res.data[i])
+            res.data[i].isRead=1;
+            readMessgae(res.data[i]).then(res =>{
+              console.log("readmessage"+res)
+            })
             //   var div=document.createElement("div");
             //   if (res.data[i].recieveId==this.$store.state.userId){
             //     div.className="left"
@@ -75,9 +91,9 @@ export default {
             //   div.innerHTML=res.data[i].message;
             //   dom.appendChild(div);
           }
-
+          this.isRun=false
         }).catch(erro =>{
-
+          this.isRun=false
         })
     }
   },
@@ -88,9 +104,16 @@ export default {
     this.getmessage()
   },
   props:['chatTo'],
-  // watch:{
-  //   messagenumber:'getmessage'
-  // }
+  computed: {
+    listenshowpage1() {
+      return this.$store.state.messagenumber;
+    }
+  },
+    watch:{
+      listenshowpage1:function (a,b) {
+        this.getmessage()
+      }
+  }
 };
 </script>
 

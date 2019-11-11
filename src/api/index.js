@@ -104,6 +104,17 @@ export default {
         url,
         params
       })
+    },
+    put(url, data) {
+        return service({
+            method: 'put',
+            url,
+            // data: Qs.stringify(data),
+            data: data,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
     }
   }
   
