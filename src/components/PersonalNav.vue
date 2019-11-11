@@ -58,7 +58,7 @@
           <p class="title">選擇充值金額：</p>
         </div>
         <div class="option">
-          <el-radio-group v-model="radio1" text-color="#F7C709" fill="#F7C709">
+          <el-radio-group v-model="radio1" text-color="#F7C709" fill="#F7C709" @change="checkMoney">
             <el-radio
               v-for="(item, index ) in moneyList"
               :key="index"
@@ -67,7 +67,7 @@
               style="width:200px;height:70px;line-height:50px;margin:10px 10px;"
             ></el-radio>
           </el-radio-group>
-          <el-input v-model="customMon" placeholder="請輸入金額"></el-input>
+          <el-input  v-model="customMon" placeholder="請輸入金額" :disabled="checkMoneyed"></el-input>
         </div>
        
       </div>
@@ -106,7 +106,7 @@
             <div class="chooseList">
               <el-radio-group v-model="radio">
                 <div class="listItem" v-for="( item,index ) in goodsList" :key="index">
-                  <el-radio :label="item.val" border>
+                  <el-radio :label="item.val" border >
                     <span>{{item.oldVal}}</span>
                     <span>{{item.newVal}}</span>
                     <span>{{item.save}}</span>
@@ -142,9 +142,9 @@
               </p>
             </div>
             <div class="chooseList">
-              <el-radio-group v-model="radio">
+              <el-radio-group v-model="radio" >
                 <div class="listItem" v-for="( item,index ) in wingList" :key="index">
-                  <el-radio :label="item.val" border>
+                  <el-radio :label="item.val" border @change="checkMoney">
                     <span>{{item.oldVal}}</span>
                     <span>{{item.newVal}}</span>
                     <span>{{item.save}}</span>
@@ -170,6 +170,7 @@
 
 <script>
 import { payMoney } from "../api/payMoney";
+import {getUnReadMessage} from '../api/chat';
 export default {
   name: "headNav",
   created() {
@@ -182,6 +183,7 @@ export default {
   mounted() {},
   data() {
     return {
+      checkMoneyed:true,
       userId: this.$store.state.userId,
       search: "",
       dialogFormVisible: false,
@@ -198,7 +200,7 @@ export default {
       formLabelWidth: "220px",
       customMon: "",
       radio1: "100",
-      moneyList: ["100", "200", "500", "50", "20"],
+      moneyList: ["100", "200", "500", "50", "20","自定义"],
       who: 1,
       friendId: "",
       radio: 1,
@@ -258,6 +260,13 @@ export default {
     };
   },
   methods: {
+    checkMoney(){
+      if (this.radio1=="自定义"){
+        this.checkMoneyed=false
+      }else {
+        this.checkMoneyed=true
+      }
+    },
     pay() {},
     chat() {
       alert(1);
@@ -278,6 +287,7 @@ export default {
       });
     },
     payMoney(ref) {
+      let that=this
       this.dialogFormVisible = true;
       const userId = this.userId;
       setTimeout(function() {
@@ -290,7 +300,7 @@ export default {
                 purchase_units: [
                   {
                     amount: {
-                      value: "0.01"
+                      value: that.radio1!="自定义"?that.radio1:that.customMon
                     }
                   }
                 ]
@@ -300,12 +310,12 @@ export default {
               // This function captures the funds from the transaction.
               return actions.order.capture().then(function(details) {
                 // This function shows a transaction success message to your buyer.
-                console.log(data);
                 console.log(details);
                 //这里是成功了的回调，在此处调用我们自己后台接口，暂定为getOrderStatus
                 const orderId = data.orderID;
                 payMoney({ orderId, userId }).then(res =>{
-                  if( res.code===200 ){
+                  console.log(res)
+                  if( res.code==200 ){
                     alert('交易成功')
                   }else{
                     alert("请联系管理员")
@@ -352,6 +362,84 @@ export default {
         this.$refs["gradeF"].style.display = "none";
       }
     }
+  },
+  mounted(){
+    let that=this;
+    let Params={
+      recieveId:that.$store.state.userId
+    }
+    getUnReadMessage(Params).then(res =>{
+      console.log(res)
+      for (var i=0;i<res.data.length;i++){
+        if (res.data[i].sender_id=="all"){
+          that.$store.state.messagenumber=res.data[i].unRead;
+        } else {
+          var usermessage=localStorage.getItem(that.$store.state.userId);
+          if (usermessage!=null){
+            var a=JSON.parse(usermessage);
+            var key=res.data[i].sender_id
+            var value=res.data[i].unRead
+            a[key]=value;
+            localStorage.setItem(that.$store.state.userId,JSON.stringify(a));
+          } else {
+            var a={}
+            var key=res.data[i].sender_id
+            var value=res.data[i].unRead
+            a[key]=value;
+            localStorage.setItem(that.$store.state.userId,JSON.stringify(a));
+          }
+        }
+      }
+      console.log(that.$store.state.userId)
+      console.log(localStorage.getItem(that.$store.state.userId))
+      console.log(that.$store.state.messagenumber)
+      console.log(that.$store.message)
+      console.log(res)
+    }).catch(erro =>{
+
+    })
+    var socket;
+    if(!window.WebSocket){
+      window.WebSocket = window.MozWebSocket;
+    }
+    if(window.WebSocket){
+      socket = new WebSocket("ws:http://203.195.140.253:8400/ws?userId="+that.$store.state.userId);
+      socket.onmessage = function(event){
+        var usermessage=localStorage.getItem(that.$store.state.userId);
+        if (usermessage!=null){
+          var a=JSON.parse(usermessage);
+          var key=res.data[i].sender_id
+          var value=res.data[i].unRead
+          a[key]=value;
+          localStorage.setItem(that.$store.state.userId,JSON.stringify(a));
+        } else {
+          var a={}
+          var key=res.data[i].sender_id
+          var value=res.data[i].unRead
+          a[key]=value;
+          localStorage.setItem(that.$store.state.userId,JSON.stringify(a));
+        }
+        // var ta = document.getElementById('responseText');
+        // eslint-disable-next-line no-console
+        that.$store.state.messagenumber=that.$store.state.messagenumber+1
+        console.log(event,event.data)
+        // ta.value += event.data+"\r\n";
+      };
+      socket.onopen = function(event){
+        var ta = document.getElementById('responseText');
+        console.log(event,"active")
+        console.log("Netty-WebSocket服务器。。。。。。连接  \r\n")
+        // ta.value = "Netty-WebSocket服务器。。。。。。连接  \r\n";
+      };
+      socket.onclose = function(event){
+        // var ta = document.getElementById('responseText');
+        console.log("Netty-WebSocket服务器。。。。。。关闭 \r\n")
+        // ta.value = "Netty-WebSocket服务器。。。。。。关闭 \r\n";
+      };
+    }else{
+      alert("您的浏览器不支持WebSocket协议！");
+    }
+    this.$store.websocket=socket;
   },
   components: {}
 };

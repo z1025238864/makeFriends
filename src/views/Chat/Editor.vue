@@ -17,12 +17,19 @@ export default {
       data () {
         return {
           editorContent: '',
-          info:''
+          info:'',
+          message:{
+              senderId:this.$store.state.userId,
+              // receiverId:this.receiverId,
+              receiverId:5,
+              message:'',
+          }
         }
       },
       methods: {
         getContent: function () {
-            alert(this.editorContent)
+            var a=JSON.stringify(this.message)
+            this.$store.websocket.send(a)
         },
         setEditor(){
 
@@ -31,7 +38,7 @@ export default {
       mounted() {
         var editor = new E(this.$refs.editor,'#content')
         editor.customConfig.onchange = (html) => {
-          this.editorContent = html
+          this.message.message = html
         }
         editor.customConfig.pasteIgnoreImg = false
         // 隐藏“网络图片”tab
@@ -54,6 +61,7 @@ export default {
             ]
         editor.create()
       }
+    // props:["receiverId"]
     }
 </script>
 

@@ -6,7 +6,8 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     token:localStorage.getItem('token') || '',
-    userId:localStorage.getItem('userId') || ''
+    userId:localStorage.getItem('userId') || '',
+    messagenumber:0,
   },
   mutations: {
     setToken( state, value ){
@@ -16,8 +17,14 @@ export default new Vuex.Store({
     saveUserId( state, value ){
       state.userId = value
       localStorage.setItem('userId',value )
-    }
+    },
+    test( state, value ){
+      state.messagenumber=state.messagenumber+1
+      alert(2222)
+    },
   },
   actions: {},
-  modules: {}
+  modules: {},
+  message:"",
+  websocket:""
 });
