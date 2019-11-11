@@ -170,6 +170,7 @@
 
 <script>
 import { payMoney } from "../api/payMoney";
+import {getUnReadMessage} from '../api/chat';
 export default {
   name: "headNav",
   created() {
@@ -309,7 +310,6 @@ export default {
               // This function captures the funds from the transaction.
               return actions.order.capture().then(function(details) {
                 // This function shows a transaction success message to your buyer.
-                console.log(data);
                 console.log(details);
                 //这里是成功了的回调，在此处调用我们自己后台接口，暂定为getOrderStatus
                 const orderId = data.orderID;
@@ -362,6 +362,47 @@ export default {
         this.$refs["gradeF"].style.display = "none";
       }
     }
+  },
+  mounted(){
+    let that=this;
+    let Params={
+      recieveId:that.$store.state.userId
+    }
+    getUnReadMessage(Params).then(res =>{
+      console.log(that.$store.state.userId)
+      console.log(localStorage.getItem(that.$store.state.userId))
+      console.log(that.$store.message)
+      console.log(res)
+    }).catch(erro =>{
+
+    })
+    var socket;
+    if(!window.WebSocket){
+      window.WebSocket = window.MozWebSocket;
+    }
+    if(window.WebSocket){
+      socket = new WebSocket("ws://127.0.0.1:8400/ws?userId=777");
+      socket.onmessage = function(event){
+        // var ta = document.getElementById('responseText');
+        // eslint-disable-next-line no-console
+        console.log(event,event.data)
+        // ta.value += event.data+"\r\n";
+      };
+      socket.onopen = function(event){
+        var ta = document.getElementById('responseText');
+        console.log(event,"active")
+        console.log("Netty-WebSocket服务器。。。。。。连接  \r\n")
+        // ta.value = "Netty-WebSocket服务器。。。。。。连接  \r\n";
+      };
+      socket.onclose = function(event){
+        // var ta = document.getElementById('responseText');
+        console.log("Netty-WebSocket服务器。。。。。。关闭 \r\n")
+        // ta.value = "Netty-WebSocket服务器。。。。。。关闭 \r\n";
+      };
+    }else{
+      alert("您的浏览器不支持WebSocket协议！");
+    }
+    this.$store.websocket=socket;
   },
   components: {}
 };

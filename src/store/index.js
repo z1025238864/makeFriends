@@ -16,8 +16,12 @@ export default new Vuex.Store({
     saveUserId( state, value ){
       state.userId = value
       localStorage.setItem('userId',value )
-    }
+    },
+
   },
   actions: {},
-  modules: {}
+  modules: {},
+  messagenumber:0,
+  message:"",
+  websocket:""
 });

@@ -100,6 +100,7 @@
 </template>
 <script>
 import { getUserInfo } from "../../api/getUserInfo";
+
 export default {
   name: "personalHome",
   data() {
@@ -135,7 +136,10 @@ export default {
       });
     }
   },
-  components: {}
+  components: {},
+  mounted() {
+
+  }
 };
 </script>
 

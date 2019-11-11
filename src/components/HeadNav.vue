@@ -50,6 +50,7 @@ name: 'headnav',
           const token = res.data.token
           const id = res.data.id
           this.$store.commit('setToken',token);
+          this.$store.commit('saveUserId',id);
           this.$router.push({
             path:'/personalHome/newdynamic',
             query:{
